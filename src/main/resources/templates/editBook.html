@@ -1,0 +1,86 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Books</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+</head>
+<body>
+<form th:action="@{/}" method="get">
+    <button class="btn btn-md btn-warning btn-block" type="Submit">Go to the book list</button>
+</form>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <form action="#" th:action="@{/update/{id}(id=${book.id})}"
+                  th:object="${book}" method="post" class="form-horizontal">
+                <h2>Edit book</h2>
+
+                <div class="form-group">
+                    <div class="col-sm-9">
+                        <label for="title" class="col-form-label">Title</label>
+                        <input type="text" th:field="*{title}" id="title" placeholder="Title"
+                               class="form-control"/>
+                        <label th:if="${#fields.hasErrors('title')}" th:errors="*{title}"
+                               class="validation-message"></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-9">
+                        <label for="author" class="col-form-label">author</label>
+                        <select th:field="*{authors}" multiple="multiple" id="author" class="form-control">
+                            <option th:each="author : ${authorList}"
+                                    th:selected="${book.authors}"
+                                    th:value="${author.id}"
+                                    th:text="${author.name}">
+                            </option>
+                        </select>
+                        <label th:if="${#fields.hasErrors('authors')}" th:errors="*{authors}"
+                               class="validation-message"></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-9">
+                        <label for="year" class="col-form-label">Year</label>
+                        <input type="text" th:field="*{year}" placeholder="Year"
+                              id="year" class="form-control"/> <label
+                            th:if="${#fields.hasErrors('year')}" th:errors="*{year}"
+                            class="validation-message"></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-9">
+                        <label for="category" class="col-form-label">Category</label>
+                        <select th:field="*{category}" id="category" class="form-control">
+                            <option value=""> -- </option>
+                            <option th:each="category : ${categoryList}"
+                                    th:selected="${book.category}"
+                                    th:value="${category.id}"
+                                    th:text="${category.name}">
+                            </option>
+                        </select>
+                        <label th:if="${#fields.hasErrors('category')}" th:errors="*{category}"
+                               class="validation-message"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cover" class="col-form-label">Cover</label><br>
+                    <tr>
+                        <input type="radio" name="cover" value="soft-cover" checked="checked" id="cover"> soft-cover <br>
+                        <input type="radio" name="cover" value="hard-cover"> hard-cover <br>
+                    </tr>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-9">
+                        <input type="submit" class="btn btn-primary" value="Update Book">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

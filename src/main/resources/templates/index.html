@@ -1,0 +1,127 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Books</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Demo</title>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width"/>
+    <base href="/"/>
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1> Books </h1>
+        </div>
+    </div>
+    <h2><span class="text-success" th:text=${successMessage}></span></h2>
+    <div class="container unauthenticated">
+        <div class="col-md-9">
+            <a class="btn btn-success" style="background-color: #FF8C00;" href="/login/github">Login with GitHub</a>
+        </div>
+    </div>
+    <div class="container authenticated" style="display: none">
+        <div>
+            <h3>Logged in as: <span id="user"></span></span></h3>
+            <button onClick="logout()" class="btn btn-primary" style="float: right; background-color: #FF8C00;">Logout
+            </button>
+        </div>
+        <div class="col-md-9">
+            <a class="btn btn-success" href="#" th:href="@{/add}">Add Book</a>
+            <a class="btn btn-success" href="#" th:href="@{/authors/addAuthor}">Add Author</a>
+            <a class="btn btn-success" href="#" th:href="@{/authors/list}">Show Authors</a>
+            <a class="btn btn-success" href="#" th:href="@{/categories/addCategory}">Add Category</a>
+            <a class="btn btn-success" href="#" th:href="@{/categories/list}">Show Categories</a>
+        </div>
+    </div>
+    <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
+    <script type="text/javascript">
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (settings.type == 'POST' || settings.type == 'PUT'
+                    || settings.type == 'DELETE') {
+                    if (!(/^http:.*/.test(settings.url) || /^https:.*/
+                        .test(settings.url))) {
+                        // Only send the token to relative URLs i.e. locally.
+                        xhr.setRequestHeader("X-XSRF-TOKEN", Cookies
+                            .get('XSRF-TOKEN'));
+                    }
+                }
+            }
+        });
+        $.get("/user", function (data) {
+            $("#user").html(data.name);
+            if (data.name == undefined) {
+                logout();
+            } else {
+                $(".unauthenticated").hide();
+                $(".authenticated").show();
+            }
+        });
+        var logout = function () {
+            $.post("/logout", function () {
+                $("#user").html('');
+                $(".unauthenticated").show();
+                $(".authenticated").hide();
+            });
+            return true;
+        }
+    </script>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th> Title</th>
+                    <th> Author</th>
+                    <th> Year</th>
+                    <th> Category</th>
+                    <th> Cover</th>
+                    <th> Action book</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${bookList == null}">
+                    <td colspan="2"> No Books Available</td>
+                </tr>
+                <tr th:each="book : ${bookList}">
+                    <td><span th:text="${book.title}"> Title </span></td>
+                    <td>
+                        <table>
+                            <tr th:each="author : ${book.authors}">
+                                <td><span th:text="${author.name}"> Name </span></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td><span th:text="${book.year}"> Year </span></td>
+                    <td>
+                        <table>
+                            <tr th:each="category : ${book.category}">
+                                <td><span th:text="${category.name}"> Name </span></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td><span th:text="${book.cover}"> Cover </span></td>
+                    <td>
+                        <div class="authenticated"><a class="btn btn-primary" style="background-color: #f44336"; th:href="@{/delete/{id}(id=${book.id})}">
+                            <i class="fas fa-user-times ml-2"></i>Delete</a></div>
+                    </td>
+                    <td>
+                        <div class="authenticated"><a class="btn btn-primary" th:href="@{/edit/{id}(id=${book.id})}">
+                            <i class="fas fa-user-times ml-2"></i>Edit</a></div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
